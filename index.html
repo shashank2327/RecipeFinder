@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+
+
+        /* New Navbar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b6b 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1001;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ffeaa7;
+        }
+
+        /* New Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, #ff4757 0%, #ff6b6b 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: auto;
+            box-shadow: 0 -4px 6px rgba(0,0,0,0.1);
+        }
+
+        .footer-links {
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Adjust body padding for fixed navbar */
+        body {
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        /* Existing media queries */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            .nav-links {
+                gap: 1rem;
+            }
+            .nav-links a {
+                font-size: 0.9rem;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -10%;
+            width: 120%;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(-3deg);
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .search-container:hover {
+            transform: scale(1.02);
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            background: rgba(255,255,255,1);
+        }
+
+        #searchInput::placeholder {
+            color: #95a5a6;
+        }
+
+        .meals-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .meal-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .meal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 60%, rgba(0,0,0,0.7));
+            z-index: 1;
+        }
+
+        .meal-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .meal-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .meal-card h3 {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            color: white;
+            z-index: 2;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .category-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,107,107,0.9);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            overflow-y: auto;
+            animation: modalEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2rem auto;
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            transform: rotate(90deg) scale(1.1);
+            background: #ff4757;
+        }
+
+        .meal-details img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .ingredients-list {
+            columns: 2;
+            margin: 2rem 0;
+            gap: 2rem;
+        }
+
+        .ingredients-list li {
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 0.8rem;
+            background: rgba(255,107,107,0.1);
+            border-radius: 8px;
+            list-style: none;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .ingredients-list li:hover {
+            transform: translateX(10px);
+            background: rgba(255,107,107,0.15);
+        }
+
+        .ingredients-list li::before {
+            content: '🥄';
+            margin-right: 10px;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            margin-top: 2rem;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 1rem;
+                padding: 2rem;
+            }
+            .ingredients-list {
+                columns: 1;
+            }
+            .meal-card h3 {
+                font-size: 1.2rem;
+            }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1001;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            background: #ff4757;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">RecipeFinder</a>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>Recipe Finder</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search for recipes...">
+        </div>
+    </header>
+
+    <div class="meals-container" id="trendingMeals"></div>
+    <div class="meals-container" id="searchResults" style="display: none;"></div>
+
+    <div id="mealModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="meal-details" id="mealDetails"></div>
+        </div>
+    </div>
+
+    <div class="loading"></div>
+    <div class="scroll-top">↑</div>
+
+    <footer class="footer">
+        <p>© 2024 Recipe Finder. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll to top button
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.querySelector('.scroll-top');
+            scrollTop.style.display = window.scrollY > 500 ? 'flex' : 'none';
+        });
+
+        document.querySelector('.scroll-top').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Enhanced fetch with loading
+        async function fetchWithLoading(url) {
+            document.querySelector('.loading').style.display = 'block';
+            try {
+                const response = await fetch(url);
+                return await response.json();
+            } finally {
+                document.querySelector('.loading').style.display = 'none';
+            }
+        }
+
+        // Fetch trending meals
+        window.onload = async () => {
+            const data = await fetchWithLoading('https://www.themealdb.com/api/json/v1/1/search.php?s=');
+            displayTrendingMeals(data.meals?.slice(0, 8) || []);
+        };
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                const searchTerm = e.target.value.trim();
+                if (searchTerm) {
+                    const data = await fetchWithLoading(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchTerm}`);
+                    document.getElementById('trendingMeals').style.display = 'none';
+                    const searchResults = document.getElementById('searchResults');
+                    searchResults.style.display = 'grid';
+                    displayMeals(data.meals || [], searchResults);
+                }
+            }
+        });
+
+        // Display meals
+        function displayMeals(meals, container) {
+            container.innerHTML = '';
+            if (!meals.length) {
+                container.innerHTML = '<p style="text-align:center;width:100%;">No recipes found. Try another search! 🍳</p>';
+                return;
+            }
+
+            meals.forEach(meal => {
+                const mealCard = document.createElement('div');
+                mealCard.className = 'meal-card';
+                mealCard.innerHTML = `
+                    <div class="category-tag">${meal.strCategory}</div>
+                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+                    <h3>${meal.strMeal}</h3>
+                `;
+                mealCard.addEventListener('click', () => showMealDetails(meal.idMeal));
+                container.appendChild(mealCard);
+            });
+        }
+
+        function displayTrendingMeals(meals) {
+            displayMeals(meals, document.getElementById('trendingMeals'));
+        }
+
+        // Show meal details
+        async function showMealDetails(mealId) {
+            const data = await fetchWithLoading(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`);
+            const meal = data.meals?.[0];
+            if (!meal) return;
+
+            const ingredients = [];
+            for (let i = 1; i <= 20; i++) {
+                const ingredient = meal[`strIngredient${i}`];
+                if (ingredient?.trim()) {
+                    ingredients.push(`${meal[`strMeasure${i}`]} ${ingredient}`);
+                }
+            }
+
+            const modalContent = `
+                <h2>${meal.strMeal}</h2>
+                <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+                <div class="meal-info">
+                    <h3>${meal.strCategory} • ${meal.strArea}</h3>
+                    <h3>👨🍳 ${meal.strSource ? '<a href="'+meal.strSource+'" target="_blank">Recipe Source</a>' : 'No source available'}</h3>
+                </div>
+                
+                <h3>Ingredients:</h3>
+                <ul class="ingredients-list">
+                    ${ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                </ul>
+
+                <h3>Instructions:</h3>
+                <p>${meal.strInstructions}</p>
+
+                ${meal.strYoutube ? `
+                <h3>Video Tutorial:</h3>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/${meal.strYoutube.split('v=')[1]}" 
+                        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope" allowfullscreen></iframe>
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('mealDetails').innerHTML = modalContent;
+            document.getElementById('mealModal').style.display = 'block';
+        }
+
+        // Modal close handlers
+        document.querySelector('.close').addEventListener('click', () => {
+            document.getElementById('mealModal').style.display = 'none';
+        });
+
+        window.onclick = (event) => {
+            if (event.target === document.getElementById('mealModal')) {
+                document.getElementById('mealModal').style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
